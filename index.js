@@ -2,19 +2,29 @@ const express = require('express');
 const morgan = require('morgan');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
+const path = require('path'); // Import path module for file path operations
 const Docs = require('./docs.json');
 
 const app = express();
 
-app.use(morgan('dev'))
-app.use(express.json())
+// Define the port for production deployment
+const PORT = process.env.PORT || 3000;
+
+// Use morgan middleware for logging
+app.use(morgan('combined'));
+
+// Use express.json() middleware for parsing JSON bodies
+app.use(express.json());
+
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 // GET API
 app.get('/', (req, res) => {
-    res.send('Welcome To My CRUD API.')
-})
+    res.send('Welcome To My CRUD API.');
+});
 
-// GET ALL USER 
+// GET ALL USER
 app.get('/users', (req, res) => {
     if (Docs.length === 0) {
         const html = `
@@ -30,28 +40,25 @@ app.get('/users', (req, res) => {
     }
 });
 
-
 // GET USER WITH ID
 app.get('/users/:id', (req, res) => {
     let result = Docs.find(Element => Element.id == req.params.id);
     if (result) {
-        res.send(result)
+        res.send(result);
+    } else {
+        res.send(`No user found with id: ${req.params.id}.`);
     }
-    else {
-        res.send(`No user found with id: ${req.params.id}.`)
-    }
-})
+});
 
 // GET USER WITH NAME
-app.get('/users/:name', (req, res) => {
+app.get('/users/name/:name', (req, res) => {
     let result = Docs.find(Element => Element.name == req.params.name);
     if (result) {
-        res.send(result)
+        res.send(result);
+    } else {
+        res.send(`No user found with name: ${req.params.name}.`);
     }
-    else {
-        res.send(`No user found with name: ${req.params.username}.`)
-    }
-})
+});
 
 // POST NEW USER
 app.post('/users', (req, res) => {
@@ -59,12 +66,6 @@ app.post('/users', (req, res) => {
 
     if (!name || !email || !age) {
         return res.status(400).send("Name, email, and age are required.");
-    }
-
-    const allowedFields = ['name', 'email', 'age'];
-    const extraFields = Object.keys(req.body).filter(field => !allowedFields.includes(field));
-    if (extraFields.length > 0) {
-        return res.status(400).send(`Extra fields not allowed: ${extraFields.join(', ')}`);
     }
 
     const newUser = {
@@ -75,14 +76,14 @@ app.post('/users', (req, res) => {
     };
     Docs.push(newUser);
 
-    fs.writeFile(__dirname + '/docs.json', JSON.stringify(Docs), (err) => {
+    fs.writeFile(path.join(__dirname, 'docs.json'), JSON.stringify(Docs), (err) => {
         if (err) {
             res.status(500).send("Internal Server Error");
         } else {
             res.send(`User added successfully`);
         }
-    })
-})
+    });
+});
 
 // UPDATE USER WITH ID
 app.put('/users/:id', (req, res) => {
@@ -104,7 +105,7 @@ app.put('/users/:id', (req, res) => {
         userToUpdate.age = age;
     }
 
-    fs.writeFile(__dirname + '/docs.json', JSON.stringify(Docs), (err) => {
+    fs.writeFile(path.join(__dirname, 'docs.json'), JSON.stringify(Docs), (err) => {
         if (err) {
             res.status(500).send("Internal Server Error");
         } else {
@@ -124,15 +125,16 @@ app.delete('/users/:id', (req, res) => {
 
     Docs.splice(userIndex, 1);
 
-    fs.writeFile(__dirname + '/docs.json', JSON.stringify(Docs), (err) => {
+    fs.writeFile(path.join(__dirname, 'docs.json'), JSON.stringify(Docs), (err) => {
         if (err) {
             res.status(500).send("Internal Server Error");
         } else {
             res.send('User Deleted.');
         }
     });
-})
+});
 
+// Start the server
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });

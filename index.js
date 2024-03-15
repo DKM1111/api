@@ -2,21 +2,17 @@ const express = require('express');
 const morgan = require('morgan');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-const path = require('path'); // Import path module for file path operations
+const path = require('path');
 const Docs = require('./docs.json');
 
 const app = express();
 
-// Define the port for production deployment
 const PORT = process.env.PORT || 3000;
 
-// Use morgan middleware for logging
 app.use(morgan('combined'));
 
-// Use express.json() middleware for parsing JSON bodies
 app.use(express.json());
 
-// Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
 // GET API
@@ -109,7 +105,7 @@ app.put('/users/:id', (req, res) => {
         if (err) {
             res.status(500).send("Internal Server Error");
         } else {
-            res.send(`User ${userId} updated successfully`);
+            res.send(`User ${name} updated successfully`);
         }
     });
 });
@@ -134,7 +130,6 @@ app.delete('/users/:id', (req, res) => {
     });
 });
 
-// Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

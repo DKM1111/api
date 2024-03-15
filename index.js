@@ -17,7 +17,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // GET API
 app.get('/', (req, res) => {
-    res.send('Welcome To My CRUD API.');
+    res.send('<div style=color: "blue"; text-align: center;>Welcome To My CRUD API.<div>');
 });
 
 // GET ALL USER

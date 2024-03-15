@@ -27,7 +27,7 @@ app.get('/users', (req, res) => {
         <html>
         <body style="text-align: center; padding-top: 40px;">
             <span style="color: blue; display: block;">No Data, Please Add Some User</span>
-            <img src="https://assets-v2.lottiefiles.com/a/0e30b444-117c-11ee-9b0d-0fd3804d46cd/BkQxD7wtnZ.gif" style="max-width: 25%; height: auto;" alt="No Users found">
+            <img src="https://assets-v2.lottiefiles.com/a/0e30b444-117c-11ee-9b0d-0fd3804d46cd/BkQxD7wtnZ.gif" style="max-width: 20%; height: auto;" alt="No Users found">
         </body>
         </html>`;
         return res.send(html);

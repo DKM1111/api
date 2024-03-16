@@ -3,11 +3,14 @@ const morgan = require('morgan');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
+const cors = require('cors');
 const Docs = require('./docs.json');
 
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+
+app.use(cors());
 
 app.use(morgan('combined'));
 

@@ -64,7 +64,13 @@ app.post('/users', (req, res) => {
     const { name, email, age } = req.body;
 
     if (!name || !email || !age) {
-        return res.status(400).send("Name, email, and age are required.");
+        return res.status(400).json({ error: "Name, email, and age are required." });
+    }
+
+    const allowedFields = ['name', 'email', 'age'];
+    const extraFields = Object.keys(req.body).filter(field => !allowedFields.includes(field));
+    if (extraFields.length > 0) {
+        return res.status(400).json({ error: `Extra fields not allowed: ${extraFields.join(', ')}` });
     }
 
     const newUser = {
@@ -75,14 +81,15 @@ app.post('/users', (req, res) => {
     };
     Docs.push(newUser);
 
-    fs.writeFile(path.join(__dirname, 'docs.json'), JSON.stringify(Docs), (err) => {
+    fs.writeFile(__dirname + '/docs.json', JSON.stringify(Docs), (err) => {
         if (err) {
-            res.status(500).send("Internal Server Error");
+            return res.status(500).json({ error: "Internal Server Error" });
         } else {
-            res.send(`User added successfully`);
+            return res.status(201).json({ message: "User added successfully", user: newUser });
         }
     });
-});
+})
+
 
 // UPDATE USER WITH ID
 app.put('/users/:id', (req, res) => {
